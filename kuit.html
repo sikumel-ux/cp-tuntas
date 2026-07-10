@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TUNTAS - Bukti Pembayaran Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f3;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M9 24h10v10H9zM39 24h10v10H39zM24 9h10v10H24zM24 39h10v10H24z' fill='%2310b981' fill-opacity='0.015'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex items-center justify-center p-4 pb-12">
+
+<div class="w-full max-w-sm bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden relative">
+    <div class="h-8 bg-emerald-800 w-full"></div>
+    <div class="p-6 pt-8 space-y-6 text-center">
+        <div>
+            <h1 class="text-2xl font-black text-emerald-800 tracking-tight leading-none">TUNTAS.</h1>
+            <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Turun Tangan Atasi Sampah</p>
+        </div>
+
+        <div class="space-y-1">
+            <h2 class="text-base font-extrabold text-slate-800 tracking-wide uppercase">Bukti Pembayaran</h2>
+            <div class="w-8 h-0.5 bg-emerald-500 mx-auto rounded-full"></div>
+        </div>
+
+        <p id="teksDeskripsiKuitansi" class="text-xs text-slate-500 font-medium leading-relaxed px-2">Memuat data pembayaran...</p>
+
+        <div class="bg-emerald-50/60 border border-emerald-100/70 rounded-3xl py-5 px-4 space-y-1 max-w-[280px] mx-auto">
+            <h3 id="txtNominalAngka" class="text-2xl font-black text-emerald-800 tracking-tight">Rp 0</h3>
+            <p id="txtNominalTerbilang" class="text-[9px] font-bold text-emerald-600 italic uppercase tracking-wider">~ Nol Rupiah ~</p>
+        </div>
+
+        <div class="flex justify-center py-2">
+            <div class="p-3 bg-white border border-slate-100 rounded-3xl shadow-sm flex items-center justify-center">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Terima Kasih Atas Partisipasi Anda</p>
+
+        <div class="border-t border-slate-100 pt-4 flex justify-between items-end text-left">
+            <div class="space-y-0.5">
+                <p class="text-[9px] font-bold text-slate-400 uppercase">Tanggal</p>
+                <p id="metaTanggal" class="text-[11px] font-extrabold text-slate-700">-</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase pt-1">ID Transaksi</p>
+                <p id="metaTokenID" class="text-[11px] font-mono font-bold text-slate-700">-</p>
+            </div>
+            <div class="text-right space-y-0.5">
+                <p class="text-[9px] font-bold text-slate-400 uppercase">Pengurus Tuntas</p>
+                <p id="metaNamaPengurus" class="text-[11px] font-black text-emerald-700 uppercase tracking-wide">-</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    function angkaKeTerbilang(nominal) {
+        const bilangan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+        let bantu = "";
+        if (nominal < 12) bantu = " " + bilangan[nominal];
+        else if (nominal < 20) bantu = angkaKeTerbilang(nominal - 10) + " Belas";
+        else if (nominal < 100) bantu = angkaKeTerbilang(Math.floor(nominal / 10)) + " Puluh" + angkaKeTerbilang(nominal % 10);
+        else if (nominal < 200) bantu = " Seratus" + angkaKeTerbilang(nominal - 100);
+        else if (nominal < 1000) bantu = angkaKeTerbilang(Math.floor(nominal / 100)) + " Ratus" + angkaKeTerbilang(nominal % 100);
+        else if (nominal < 2000) bantu = " Seribu" + angkaKeTerbilang(nominal - 1000);
+        else if (nominal < 1000000) bantu = angkaKeTerbilang(Math.floor(nominal / 1000)) + " Ribu" + angkaKeTerbilang(nominal % 1000);
+        return bantu.trim();
+    }
+
+    async function muatDataKuitansiDinamis() {
+        const params = new URLSearchParams(window.location.search); const tokenKuitansi = params.get('id');
+        if (!tokenKuitansi) { document.getElementById('teksDeskripsiKuitansi').innerHTML = "<span class='text-rose-600 font-bold'>ID TIDAK VALID</span>"; return; }
+
+        try {
+            const res = await fetch(`${DB_URL}/iuran_sampah.json`); const dataIuran = await res.json(); if (!dataIuran) return;
+            let tx = null;
+            Object.keys(dataIuran).forEach(key => { if (dataIuran[key].token_kuitansi === tokenKuitansi || key === tokenKuitansi) tx = dataIuran[key]; });
+
+            if (tx) {
+                const namaWarga = `<strong>${tx.nama_warga.toUpperCase()}</strong>`;
+                const nominalUang = parseInt(tx.nominal) || 0;
+                const tipeUser = (tx.tipe_user || 'Anggota Tetap').toUpperCase();
+                
+                // VALIDASI STRUKTUR KALIMAT DISESUAIKAN PERMINTAANMU, BRO
+                let kalimatDeskripsi = "";
+                if (tipeUser === "PON") {
+                    const hariSaja = tx.hari || "-"; const tglSetor = tx.tanggal_setor || tx.tanggal || "-";
+                    kalimatDeskripsi = `Diterima dari Bapak/Ibu ${namaWarga}, untuk pembayaran pembakaran sampah hari <strong>${hariSaja}</strong>, tanggal <strong>${tglSetor}</strong>, sebesar:`;
+                } else {
+                    const bulanSaja = (tx.bulan || 'JUNI').toUpperCase();
+                    kalimatDeskripsi = `Diterima dari Bapak/Ibu ${namaWarga}, untuk iuran sampah bulan <strong>${bulanSaja}</strong>, sebesar:`;
+                }
+
+                document.getElementById('teksDeskripsiKuitansi').innerHTML = kalimatDeskripsi;
+                document.getElementById('txtNominalAngka').innerText = "Rp " + nominalUang.toLocaleString('id-ID');
+                document.getElementById('txtNominalTerbilang').innerText = `~ ${angkaKeTerbilang(nominalUang)} Ribu Rupiah ~`;
+                document.getElementById('metaTanggal').innerText = tx.tanggal || "-";
+                document.getElementById('metaTokenID').innerText = tx.token_kuitansi || tokenKuitansi;
+                document.getElementById('metaNamaPengurus').innerText = tx.nama_petugas || "APRIYANTO";
+
+                new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 110, height: 110, colorDark : "#065f46", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+            } else {
+                document.getElementById('teksDeskripsiKuitansi').innerHTML = "<span class='text-rose-600 font-bold'>DATA TIDAK DITEMUKAN</span>";
+            }
+        } catch (error) { console.error(error); }
+    }
+    window.addEventListener('DOMContentLoaded', muatDataKuitansiDinamis);
+</script>
+</body>
+</html>
