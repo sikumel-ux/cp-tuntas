@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimasi Halaman Saat Dicetak (Print Mode) */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    #mainInvoiceCard {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-w: 100% !important;
+    }
+
+    /* Sembunyikan margin default browser saat mencetak */
+    @page {
+        margin: 20mm;
+    }
+}
