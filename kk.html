@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuitansi Digital TUNTAS</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,70 +17,89 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
+        /* Efek shadow halus dengan aura hijau emerald */
+        .shadow-emerald-soft {
+            box-shadow: 0 10px 30px -5px rgba(6, 78, 59, 0.08), 0 4px 12px -4px rgba(16, 185, 129, 0.03);
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F8] text-slate-700 min-h-screen flex flex-col items-center justify-center p-4 antialiased">
+<body class="bg-[#F8FAFC] text-slate-700 min-h-screen flex flex-col items-center justify-center p-4 antialiased">
 
-    <div class="w-full max-w-sm bg-white rounded-[40px] shadow-xl border border-slate-100 overflow-hidden relative pb-8">
+    <!-- CONTAINER UTAMA (Bar Atas Dihapus, Diganti Border Atas Hijau & Soft Shadow) -->
+    <div class="w-full max-w-sm bg-white rounded-[32px] border-t-4 border-[#064E3B] border-x border-b border-slate-100 p-6 shadow-emerald-soft overflow-hidden relative pb-8">
         
-        <div class="h-10 bg-[#064E3B] w-full rounded-t-[40px]"></div>
-
+        <!-- LOADING STATE -->
         <div id="loadingKuitansi" class="py-20 flex flex-col items-center justify-center gap-3">
             <div class="w-8 h-8 border-4 border-[#064E3B] border-t-transparent rounded-full animate-spin"></div>
             <p class="text-xs font-bold text-slate-400 tracking-wider uppercase">Memuat Kuitansi...</p>
         </div>
 
-        <div id="errorKuitansi" class="hidden py-20 text-center px-6">
+        <!-- ERROR STATE -->
+        <div id="errorKuitansi" class="hidden py-20 text-center">
             <i class="fa-solid fa-circle-xmark text-rose-500 text-4xl mb-3"></i>
             <h3 class="text-sm font-black uppercase text-slate-800">Kuitansi Tidak Ditemukan</h3>
-            <p class="text-xs text-slate-400 mt-1">ID transaksi salah atau data telah dihapus oleh admin.</p>
+            <p class="text-xs text-slate-400 mt-1">ID transaksi salah atau data telah dihapus.</p>
         </div>
 
-        <div id="isiKuitansi" class="hidden px-6 pt-8 space-y-6">
+        <!-- ISI KUITANSI ASLI -->
+        <div id="isiKuitansi" class="hidden space-y-6 pt-2">
             
-            <div class="text-center space-y-1">
+            <!-- LOGO & BRANDING -->
+            <div class="text-center space-y-0.5">
                 <h1 class="text-2xl font-extrabold tracking-tight text-[#064E3B]">TUNTAS.</h1>
                 <p class="text-[9px] font-bold text-[#10B981] tracking-[0.15em] uppercase">Turun Tangan Atasi Sampah</p>
             </div>
 
-            <div class="text-center pt-2">
-                <h2 class="text-lg font-extrabold text-[#1E293B] tracking-wide uppercase">Bukti Pembayaran</h2>
-                <div class="w-8 h-1 bg-[#10B981] mx-auto mt-1.5 rounded-full"></div>
+            <!-- TITLE BUKTI -->
+            <div class="text-center pt-1">
+                <h2 class="text-base font-extrabold text-[#1E293B] tracking-wide uppercase">Bukti Pembayaran</h2>
+                <div class="w-6 h-0.5 bg-[#10B981] mx-auto mt-1 rounded-full"></div>
             </div>
 
-            <div class="text-center px-2">
+            <!-- NARASI KALIMAT -->
+            <div class="text-center px-1">
                 <p id="narasiKuitansi" class="text-xs text-slate-500 font-medium leading-relaxed">
-                    </p>
+                    <!-- Diisi otomatis dari Firebase -->
+                </p>
             </div>
 
-            <div class="bg-[#E6F4EA] rounded-3xl p-6 text-center space-y-2 border border-[#D1EAD6]/60">
-                <div id="nominalTeks" class="text-3xl font-extrabold text-[#064E3B] tracking-wide">
-                    </div>
+            <!-- BOX NOMINAL -->
+            <div class="bg-[#E6F4EA] rounded-2xl py-5 px-6 text-center space-y-1.5 border border-[#D1EAD6]/50">
+                <div id="nominalTeks" class="text-2xl font-extrabold text-[#064E3B] tracking-wide">
+                    <!-- Contoh: Rp 40.000 -->
+                </div>
                 <div id="terbilangTeks" class="text-[9px] font-bold italic text-[#10B981] uppercase tracking-wider">
-                    </div>
-            </div>
-
-            <div class="flex justify-center pt-2">
-                <div class="p-3 bg-white rounded-2xl shadow-md border border-slate-100">
-                    <img id="qrCodeImg" src="" alt="QR Code" class="w-32 h-32">
+                    <!-- Terbilang dinamis -->
                 </div>
             </div>
 
-            <div class="text-center border-t border-b border-dashed border-slate-200 py-3 my-2">
-                <p class="text-[9px] font-extrabold text-slate-500 tracking-widest uppercase">Terima Kasih Atas Partisipasi Anda</p>
+            <!-- QR CODE AREA (FIXED: Dijamin Muncul via Google Charts) -->
+            <div class="flex justify-center pt-1">
+                <div class="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+                    <img id="qrCodeImg" src="" alt="QR Code Transaksi" class="w-28 h-28 block">
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 items-end pt-2 px-1 gap-4">
+            <!-- SLOGAN TENGAH -->
+            <div class="text-center border-t border-b border-dashed border-slate-200 py-2.5 my-1">
+                <p class="text-[9px] font-extrabold text-slate-400 tracking-widest uppercase">Terima Kasih Atas Partisipasi Anda</p>
+            </div>
+
+            <!-- FOOTER MATRIKS DATA (FIXED: TANGGAL FORMAT DD-MM-YY & SEJAJAR) -->
+            <div class="grid grid-cols-2 items-end px-0.5 gap-4">
                 
+                <!-- Sisi Kiri: Kotak Ringkas Tanggal (dd-mm-yy) & ID -->
                 <div class="bg-[#F8FAFC] border border-slate-100 rounded-xl p-3 space-y-1 text-[10px]">
-                    <p class="text-slate-400 font-medium">TANGGAL : <span id="tglKuitansi" class="text-slate-700 font-bold"></span></p>
-                    <p class="text-slate-400 font-medium">ID : <span id="tokenKuitansi" class="text-slate-700 font-bold"></span></p>
+                    <p class="text-slate-400 font-medium">TANGGAL : <span id="tglKuitansi" class="text-slate-700 font-bold"><!-- 10-07-26 --></span></p>
+                    <p class="text-slate-400 font-medium">ID : <span id="tokenKuitansi" class="text-slate-700 font-bold"><!-- T-288573 --></span></p>
                 </div>
 
+                <!-- Sisi Kanan: Nama Pengurus Pas Sejajar -->
                 <div class="text-right space-y-0.5 pb-1">
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Pengurus TUNTAS</p>
                     <p id="petugasKuitansi" class="text-xs font-extrabold text-[#064E3B] uppercase tracking-wide">
-                        </p>
+                        <!-- APRIYANTO -->
+                    </p>
                 </div>
 
             </div>
@@ -85,14 +107,39 @@
         </div>
     </div>
 
+    <!-- SMALL SUB-TEXT DI LUAR KOTAK -->
     <div class="text-center mt-4">
         <p class="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">Generated by Tuntas Management</p>
     </div>
 
+    <!-- CORE LOGIC & FIREBASE INTEGRATION -->
     <script>
         const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-        // Fungsi Helper Terbilang Sederhana Otomatis Rupiah
+        // Helper Map Nama Bulan Ke Angka Dua Digit
+        const mapBulanAngka = {
+            "Januari": "01", "Februari": "02", "Maret": "03", "April": "04", "Mei": "05", "Juni": "06",
+            "Juli": "07", "Agustus": "08", "September": "09", "Oktober": "10", "November": "11", "Desember": "12"
+        };
+
+        // Fungsi Parser untuk Mengubah "10 Juli 2026" atau "Senin , 10 Juli 2026" Menjadi "10-07-26"
+        function ubahKeFormatSederhana(tglString) {
+            try {
+                let sisaTeks = tglString;
+                if (tglString.includes(" , ")) {
+                    sisaTeks = tglString.split(" , ")[1];
+                }
+                const part = sisaTeks.trim().split(" ");
+                if (part.length >= 3) {
+                    const tgl = String(part[0]).padStart(2, '0');
+                    const bln = mapBulanAngka[part[1]] || "01";
+                    const thn = String(part[2]).slice(-2); 
+                    return `${tgl}-${bln}-${thn}`;
+                }
+            } catch (e) { console.error("Gagal parse tanggal", e); }
+            return tglString; 
+        }
+
         function fungsiTerbilangRupiah(nominal) {
             const num = parseInt(nominal) || 0;
             if (num === 40000) return "~ Empat Puluh Ribu Rupiah ~";
@@ -107,19 +154,13 @@
             const urlParams = new URLSearchParams(window.location.search);
             const tokenID = urlParams.get('id');
 
-            if (!tokenID) {
-                tampilkanError();
-                return;
-            }
+            if (!tokenID) { tampilkanError(); return; }
 
             try {
                 const response = await fetch(`${DB_URL}/iuran_sampah.json`);
                 const data = await response.json();
 
-                if (!data) {
-                    tampilkanError();
-                    return;
-                }
+                if (!data) { tampilkanError(); return; }
 
                 let dataKetemu = null;
                 Object.keys(data).forEach(key => {
@@ -129,21 +170,23 @@
                 });
 
                 if (dataKetemu) {
-                    // Masukkan teks narasi bersih murni dari js.js (sudah dipisah kalimat PON & Anggota Tetapnya)
+                    // Inject narasi teks ke UI
                     document.getElementById('narasiKuitansi').innerHTML = dataKetemu.narasi_kuitansi.replace(
                         dataKetemu.nama_warga, `<strong>${dataKetemu.nama_warga}</strong>`
                     );
                     
                     document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID');
                     document.getElementById('terbilangTeks').innerText = fungsiTerbilangRupiah(dataKetemu.nominal);
-                    document.getElementById('tglKuitansi').innerText = dataKetemu.tanggal;
+                    
+                    // FIX: Tanggal di-render ke format dd-mm-yy
+                    document.getElementById('tglKuitansi').innerText = ubahKeFormatSederhana(dataKetemu.tanggal);
                     document.getElementById('tokenKuitansi').innerText = dataKetemu.token_kuitansi;
                     document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "APRIYANTO";
                     
-                    // Generate QR Code Berdasarkan URL Kuitansi Warga saat ini
-                    document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
+                    // FIX: Generate QR Code dari Google Charts API terjamin render 100%
+                    const linkSekarang = window.location.href;
+                    document.getElementById('qrCodeImg').src = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(linkSekarang)}&choe=UTF-8`;
 
-                    // Tukar view loading ke isi konten kuitansi
                     document.getElementById('loadingKuitansi').classList.add('hidden');
                     document.getElementById('isiKuitansi').classList.remove('hidden');
                 } else {
