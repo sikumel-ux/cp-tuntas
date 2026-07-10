@@ -8,96 +8,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .font-mono-custom {
-            font-family: 'Space Grotesk', monospace;
-        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4 antialiased">
+<body class="bg-[#F4F6F8] text-slate-700 min-h-screen flex flex-col items-center justify-center p-4 antialiased">
 
-    <div class="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden">
+    <div class="w-full max-w-sm bg-white rounded-[40px] shadow-xl border border-slate-100 overflow-hidden relative pb-8">
         
-        <div id="loadingKuitansi" class="py-12 flex flex-col items-center justify-center gap-3">
-            <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">Memuat Data Kuitansi...</p>
+        <div class="h-10 bg-[#064E3B] w-full rounded-t-[40px]"></div>
+
+        <div id="loadingKuitansi" class="py-20 flex flex-col items-center justify-center gap-3">
+            <div class="w-8 h-8 border-4 border-[#064E3B] border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-bold text-slate-400 tracking-wider uppercase">Memuat Kuitansi...</p>
         </div>
 
-        <div id="errorKuitansi" class="hidden py-12 text-center">
-            <i class="fa-solid fa-circle-xmark text-rose-500 text-3xl mb-3"></i>
-            <h3 class="text-sm font-black uppercase text-slate-700">Kuitansi Tidak Ditemukan</h3>
-            <p class="text-xs text-slate-400 mt-1">Token salah atau data telah dihapus oleh admin.</p>
+        <div id="errorKuitansi" class="hidden py-20 text-center px-6">
+            <i class="fa-solid fa-circle-xmark text-rose-500 text-4xl mb-3"></i>
+            <h3 class="text-sm font-black uppercase text-slate-800">Kuitansi Tidak Ditemukan</h3>
+            <p class="text-xs text-slate-400 mt-1">ID transaksi salah atau data telah dihapus oleh admin.</p>
         </div>
 
-        <div id="isiKuitansi" class="hidden space-y-6">
+        <div id="isiKuitansi" class="hidden px-6 pt-8 space-y-6">
             
-            <div class="flex justify-between items-start border-b border-slate-100 pb-5">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                        <h1 class="text-base font-black tracking-wider text-slate-900 uppercase font-mono-custom">TUNTAS DIGITAL</h1>
-                    </div>
-                    <p class="text-[10px] text-slate-500 font-semibold mt-0.5 uppercase tracking-wide">Turun Tangan Atasi Sampah • RT 04 Dongkelan</p>
-                </div>
-                <div class="text-right">
-                    <span class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[9px] font-black uppercase tracking-widest rounded-lg">
-                        BUKTI PEMBAYARAN
-                    </span>
-                </div>
+            <div class="text-center space-y-1">
+                <h1 class="text-2xl font-extrabold tracking-tight text-[#064E3B]">TUNTAS.</h1>
+                <p class="text-[9px] font-bold text-[#10B981] tracking-[0.15em] uppercase">Turun Tangan Atasi Sampah</p>
             </div>
 
-            <div class="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 relative">
-                
-                <div class="absolute top-0 bottom-0 left-4 border-l border-dashed border-slate-200 pointer-events-none"></div>
-
-                <div class="pl-6 space-y-4">
-                    <div>
-                        <p id="narasiKuitansi" class="text-xs md:text-sm text-slate-700 font-medium leading-relaxed">
-                            </p>
-                    </div>
-
-                    <div class="pt-2">
-                        <span class="text-[10px] uppercase font-black tracking-widest text-slate-400 block">Jumlah Uang:</span>
-                        <div class="text-xl md:text-2xl font-black text-emerald-700 tracking-wide font-mono-custom mt-1">
-                            <span id="nominalTeks"></span>
-                        </div>
-                    </div>
-                </div>
+            <div class="text-center pt-2">
+                <h2 class="text-lg font-extrabold text-[#1E293B] tracking-wide uppercase">Bukti Pembayaran</h2>
+                <div class="w-8 h-1 bg-[#10B981] mx-auto mt-1.5 rounded-full"></div>
             </div>
 
-            <div class="pt-2 flex justify-end">
-                <div class="w-1/2 flex flex-col items-end text-right space-y-1">
-                    <p id="tglKuitansi" class="text-xs font-semibold text-slate-700">
-                        </p>
-                    
-                    <p class="text-[10px] font-mono-custom text-slate-400 uppercase tracking-wider">
-                        ID: <span id="tokenKuitansi" class="text-slate-600 font-bold"></span>
+            <div class="text-center px-2">
+                <p id="narasiKuitansi" class="text-xs text-slate-500 font-medium leading-relaxed">
                     </p>
+            </div>
 
-                    <div class="h-14 w-full relative flex items-center justify-end">
-                        <i class="fa-solid fa-circle-check text-emerald-600/10 text-4xl absolute right-4"></i>
+            <div class="bg-[#E6F4EA] rounded-3xl p-6 text-center space-y-2 border border-[#D1EAD6]/60">
+                <div id="nominalTeks" class="text-3xl font-extrabold text-[#064E3B] tracking-wide">
                     </div>
+                <div id="terbilangTeks" class="text-[9px] font-bold italic text-[#10B981] uppercase tracking-wider">
+                    </div>
+            </div>
 
-                    <p id="petugasKuitansi" class="text-xs font-black uppercase text-slate-900 border-b border-slate-300 pb-0.5 tracking-wide">
-                        </p>
-                    <p class="text-[9px] uppercase font-bold text-slate-400 tracking-widest mt-0.5">Pengurus TUNTAS</p>
+            <div class="flex justify-center pt-2">
+                <div class="p-3 bg-white rounded-2xl shadow-md border border-slate-100">
+                    <img id="qrCodeImg" src="" alt="QR Code" class="w-32 h-32">
                 </div>
             </div>
 
-            <div class="border-t border-slate-100 pt-4 text-center">
-                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-medium">Bukti pembayaran ini sah secara digital dan diterbitkan oleh sistem manajemen RT 04.</p>
+            <div class="text-center border-t border-b border-dashed border-slate-200 py-3 my-2">
+                <p class="text-[9px] font-extrabold text-slate-500 tracking-widest uppercase">Terima Kasih Atas Partisipasi Anda</p>
             </div>
-        </div>
 
+            <div class="grid grid-cols-2 items-end pt-2 px-1 gap-4">
+                
+                <div class="bg-[#F8FAFC] border border-slate-100 rounded-xl p-3 space-y-1 text-[10px]">
+                    <p class="text-slate-400 font-medium">TANGGAL : <span id="tglKuitansi" class="text-slate-700 font-bold"></span></p>
+                    <p class="text-slate-400 font-medium">ID : <span id="tokenKuitansi" class="text-slate-700 font-bold"></span></p>
+                </div>
+
+                <div class="text-right space-y-0.5 pb-1">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Pengurus TUNTAS</p>
+                    <p id="petugasKuitansi" class="text-xs font-extrabold text-[#064E3B] uppercase tracking-wide">
+                        </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <p class="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">Generated by Tuntas Management</p>
     </div>
 
     <script>
         const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+        // Fungsi Helper Terbilang Sederhana Otomatis Rupiah
+        function fungsiTerbilangRupiah(nominal) {
+            const num = parseInt(nominal) || 0;
+            if (num === 40000) return "~ Empat Puluh Ribu Rupiah ~";
+            if (num === 20000) return "~ Dua Puluh Ribu Rupiah ~";
+            if (num === 15000) return "~ Lima Belas Ribu Rupiah ~";
+            if (num === 10000) return "~ Sepuluh Ribu Rupiah ~";
+            if (num === 5000) return "~ Lima Ribu Rupiah ~";
+            return "~ Sampah Terbayar Sah ~";
+        }
 
         window.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -125,12 +129,21 @@
                 });
 
                 if (dataKetemu) {
-                    document.getElementById('narasiKuitansi').innerText = dataKetemu.narasi_kuitansi;
-                    document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID') + ",-";
-                    document.getElementById('tglKuitansi').innerText = `Dongkelan, ${dataKetemu.tanggal}`;
+                    // Masukkan teks narasi bersih murni dari js.js (sudah dipisah kalimat PON & Anggota Tetapnya)
+                    document.getElementById('narasiKuitansi').innerHTML = dataKetemu.narasi_kuitansi.replace(
+                        dataKetemu.nama_warga, `<strong>${dataKetemu.nama_warga}</strong>`
+                    );
+                    
+                    document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID');
+                    document.getElementById('terbilangTeks').innerText = fungsiTerbilangRupiah(dataKetemu.nominal);
+                    document.getElementById('tglKuitansi').innerText = dataKetemu.tanggal;
                     document.getElementById('tokenKuitansi').innerText = dataKetemu.token_kuitansi;
-                    document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "ADMIN RT 04";
+                    document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "APRIYANTO";
+                    
+                    // Generate QR Code Berdasarkan URL Kuitansi Warga saat ini
+                    document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
 
+                    // Tukar view loading ke isi konten kuitansi
                     document.getElementById('loadingKuitansi').classList.add('hidden');
                     document.getElementById('isiKuitansi').classList.remove('hidden');
                 } else {
