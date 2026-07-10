@@ -59,7 +59,7 @@
             <div class="bg-[#E6F4EA]/90 backdrop-blur-xs rounded-2xl py-5 px-6 text-center space-y-1.5 border border-[#D1EAD6]/50">
                 <div id="nominalTeks" class="text-2xl font-extrabold text-[#064E3B] tracking-wide">
                     </div>
-                <div id="terbilangTeks" class="text-[9px] font-bold italic text-[#10B981] uppercase tracking-wider">
+                <div id="terbilangTeks" class="text-[9px] font-bold italic text-[#10B981] uppercase tracking-wider px-2 break-words text-center">
                     </div>
             </div>
 
@@ -98,14 +98,26 @@
     <script>
         const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-        function fungsiTerbilangRupiah(nominal) {
+        // FIX: Fungsi generator terbilang rupiah otomatis untuk angka berapapun
+        function angkaKeTerbilang(nominal) {
+            const bilangan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
             const num = parseInt(nominal) || 0;
-            if (num === 40000) return "~ Empat Puluh Ribu Rupiah ~";
-            if (num === 20000) return "~ Dua Puluh Ribu Rupiah ~";
-            if (num === 15000) return "~ Lima Belas Ribu Rupiah ~";
-            if (num === 10000) return "~ Sepuluh Ribu Rupiah ~";
-            if (num === 5000) return "~ Lima Ribu Rupiah ~";
-            return "~ Sampah Terbayar Sah ~";
+            
+            if (num === 0) return "~ Nol Rupiah ~";
+            
+            function konversi(n) {
+                if (n < 12) return bilangan[n];
+                if (n < 20) return bilangan[n - 10] + " Belas";
+                if (n < 100) return bilangan[Math.floor(n / 10)] + " Puluh " + bilangan[n % 10];
+                if (n < 200) return "Seratus " + konversi(n - 100);
+                if (n < 1000) return bilangan[Math.floor(n / 100)] + " Ratus " + konversi(n % 100);
+                if (n < 2000) return "Seribu " + konversi(n - 1000);
+                if (n < 1000000) return konversi(Math.floor(n / 1000)) + " Ribu " + konversi(n % 1000);
+                return "";
+            }
+            
+            const hasilTeks = konversi(num).replace(/\s+/g, ' ').trim();
+            return `~ ${hasilTeks} Rupiah ~`;
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -134,13 +146,12 @@
                     );
                     
                     document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID');
-                    document.getElementById('terbilangTeks').innerText = fungsiTerbilangRupiah(dataKetemu.nominal);
                     
-                    // ==========================================
-                    // FIX TOTAL: LOGIKA PARSING TANGGAL ASLI KITA
-                    // ==========================================
+                    // FIX: Menggunakan generator terbilang otomatis murni rupiah
+                    document.getElementById('terbilangTeks').innerText = angkaKeTerbilang(dataKetemu.nominal);
+                    
+                    // Logika parsing objek tanggal aslimu
                     let tglTampil = "-";
-                    // Mengecek apakah field di database bernama 'tgl' atau 'tanggal'
                     const tglData = dataKetemu.tgl || dataKetemu.tanggal; 
                     
                     if (tglData) {
@@ -148,7 +159,7 @@
                         tglTampil = dateObj.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
                     }
                     
-                    document.getElementById('tglKuitansi').innerText = tglTampil; // Mengeluarkan format: 11 Juli 2026
+                    document.getElementById('tglKuitansi').innerText = tglTampil; 
                     document.getElementById('tokenKuitansi').innerText = dataKetemu.token_kuitansi;
                     document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "APRIYANTO";
                     
