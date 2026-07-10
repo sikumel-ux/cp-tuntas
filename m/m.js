@@ -110,7 +110,7 @@ async function muatRiwayatIuranMasyarakat() {
             const i = data[key];
             if(i.warga_key === SESI_WARGA.key && (i.tipe_user === "Anggota Tetap" || !i.tipe_user)) {
                 count++;
-                const urlKuitansi = `../kuitansi/?id=${i.token_kuitansi || key}`;
+                const urlKuitansi = `../kuitansi.html/?id=${i.token_kuitansi || key}`;
                 list.insertAdjacentHTML('afterbegin', `
                     <div class="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-3">
                         <div class="flex justify-between items-center">
