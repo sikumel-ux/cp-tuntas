@@ -3,113 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TUNTAS - Bukti Pembayaran Resmi</title>
+    <title>TUNTAS - Bukti Pembayaran</title>
+    <!-- Tailwind & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <link rel="stylesheet" href="style.css">
+    <!-- Library QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-slate-50 antialiased min-h-screen flex items-center justify-center p-4 sm:p-6 print:bg-white print:p-0">
+<body class="bg-slate-50 antialiased min-h-screen flex items-center justify-center p-4 print:bg-white print:p-0">
 
+    <!-- Loader Status -->
     <div id="loadingInvoice" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center gap-2 print:hidden">
-        <i class="fa-solid fa-circle-notch animate-spin text-2xl text-emerald-600"></i>
-        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Memuat Dokumen Kuitansi...</span>
+        <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Memuat Kuitansi...</span>
     </div>
 
-    <div id="errorInvoice" class="hidden max-w-sm w-full bg-white border border-rose-100 rounded-[2rem] p-6 text-center space-y-3 shadow-sm print:hidden">
-        <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto border border-rose-100">
-            <i class="fa-solid fa-file-circle-xmark text-lg"></i>
-        </div>
-        <div>
-            <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Kuitansi Tidak Ditemukan</h3>
-            <p class="text-xs text-slate-500 font-semibold mt-1">ID Transaksi salah atau sudah dihapus oleh admin.</p>
-        </div>
-        <button onclick="window.close()" class="w-full bg-slate-800 text-white text-xs font-bold py-3 rounded-xl uppercase tracking-wider">Tutup Halaman</button>
+    <!-- Error State -->
+    <div id="errorInvoice" class="hidden max-w-sm w-full bg-white border border-slate-200 rounded-[2.5rem] p-8 text-center space-y-4 shadow-sm print:hidden">
+        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Kuitansi Tidak Ditemukan atau ID Salah.</p>
+        <button onclick="window.close()" class="w-full bg-slate-800 text-white text-xs font-bold py-3 rounded-xl">Tutup</button>
     </div>
 
-    <div id="mainInvoiceCard" class="hidden w-full max-w-md bg-white border border-slate-100 rounded-[2.5rem] shadow-sm p-6 sm:p-8 space-y-6 relative overflow-hidden print:border-0 print:shadow-none print:p-0 print:rounded-none">
+    <!-- Main Card Kuitansi -->
+    <div id="mainInvoiceCard" class="hidden w-full max-w-sm bg-white border border-slate-100 rounded-[2.5rem] shadow-sm p-6 space-y-6 relative overflow-hidden print:border-0 print:shadow-none print:p-0">
         
-        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-600 to-teal-700 print:hidden"></div>
+        <!-- Lengkungan Hijau Atas -->
+        <div class="absolute top-0 left-0 right-0 h-4 bg-[#0A5C36] rounded-b-[1.5rem]"></div>
 
-        <div class="flex justify-between items-start pt-2">
-            <div class="flex items-center gap-3">
-                <img src="../logo.png" alt="Logo TUNTAS" class="w-12 h-12 object-cover rounded-xl border border-slate-100 shadow-sm" onerror="this.src='../logo.png'">
-                <div>
-                    <h1 class="text-lg font-black text-slate-800 tracking-tight leading-none">TUNTAS</h1>
-                    <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mt-1">RT 04 Dongkelan</p>
-                </div>
-            </div>
-            <div class="text-right">
-                <span class="bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-emerald-100 print:border print:bg-none">LUNAS</span>
+        <!-- Header Brand -->
+        <div class="text-center pt-4 space-y-1">
+            <h1 class="text-2xl font-black text-[#0A5C36] tracking-tight">TUNTAS.</h1>
+            <p class="text-[9px] font-black text-[#0A5C36] uppercase tracking-widest">Turun Tangan Atasi Sampah</p>
+        </div>
+
+        <!-- Judul Dokumen -->
+        <div class="text-center space-y-2">
+            <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider">Bukti Pembayaran</h2>
+            <div class="w-8 h-[3px] bg-emerald-500 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Narasi Dinamis Penerima (Sesuai Tipe User) -->
+        <div class="text-center text-xs text-slate-600 font-medium px-2 leading-relaxed">
+            Diterima dari Bapak/Ibu <span id="invoiceNama" class="font-black text-slate-800">-</span>, 
+            <span id="invoiceKeteranganPeruntukan">untuk iuran sampah bulan <span id="invoiceBulan" class="font-black text-slate-800">-</span></span>, sebesar:
+        </div>
+
+        <!-- Box Hijau Nominal -->
+        <div class="bg-[#E6F7ED] rounded-[2rem] p-6 text-center space-y-2">
+            <div id="invoiceTotal" class="text-2xl font-black text-[#0A5C36]">Rp 0</div>
+            <div class="w-12 h-[1px] bg-[#0A5C36]/20 mx-auto"></div>
+            <div id="invoiceTerbilang" class="text-[9px] font-bold text-[#0A5C36] italic uppercase tracking-wider">~ - ~</div>
+        </div>
+
+        <!-- Area QR Code Container -->
+        <div class="flex justify-center py-2">
+            <div class="p-4 bg-white border border-slate-100 rounded-3xl shadow-sm flex items-center justify-center">
+                <div id="qrcode"></div>
             </div>
         </div>
 
-        <hr class="border-slate-100">
-
-        <div class="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-600">
-            <div>
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">Diberikan Kepada:</span>
-                <p id="invoiceNama" class="text-slate-800 font-black uppercase text-xs">-</p>
-                <p id="invoiceTipeUser" class="text-[10px] text-slate-500 font-bold mt-0.5">-</p>
-            </div>
-            <div class="text-right">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">Nomor Kuitansi:</span>
-                <p id="invoiceToken" class="font-mono text-slate-800 font-bold uppercase text-[11px]">-</p>
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5 mt-2">Tanggal Bayar:</span>
-                <p id="invoiceTanggal" class="text-slate-700 font-bold text-[11px]">-</p>
-            </div>
+        <!-- Tagline Apresiasi -->
+        <div class="text-center">
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic border-b border-dashed border-slate-200 pb-4">
+                Terima kasih atas partisipasi anda
+            </p>
         </div>
 
-        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3 print:bg-white print:border-slate-200">
-            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block border-b border-slate-200/60 pb-1.5">Deskripsi Pembayaran</span>
+        <!-- Footer Data Metadata -->
+        <div class="flex justify-between items-end pt-2">
+            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-[10px] font-bold text-slate-500 space-y-0.5">
+                <div>TANGGAL : <span id="invoiceTanggal" class="text-slate-800">-</span></div>
+                <div>ID : <span id="invoiceToken" class="text-slate-800 font-mono font-black uppercase">-</span></div>
+            </div>
             
-            <div class="flex justify-between items-start text-xs font-bold text-slate-700">
-                <div>
-                    <h4 class="uppercase text-slate-800">Iuran Pengelolaan Sampah</h4>
-                    <p id="invoiceBulan" class="text-[10px] text-slate-400 font-semibold mt-0.5">Periode: -</p>
-                </div>
-                <span id="invoiceSubtotal" class="font-black text-slate-800">Rp 0</span>
-            </div>
-
-            <div class="border-t border-dashed border-slate-200 pt-3 flex justify-between items-center">
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Total Pembayaran</span>
-                <span id="invoiceTotal" class="text-base font-black text-emerald-700">Rp 0</span>
+            <div class="text-right text-[9px] font-bold text-slate-400 uppercase tracking-wider space-y-0.5">
+                <div>Pengurus Tuntas</div>
+                <div id="invoicePengurus" class="text-xs font-black text-[#0A5C36]">-</div>
             </div>
         </div>
 
-        <div class="space-y-1">
-            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block pl-1">Terbilang:</span>
-            <div class="bg-emerald-50/40 border border-emerald-100/60 rounded-xl p-3 text-xs font-bold text-emerald-800 italic print:bg-white print:border-slate-200">
-                "<span id="invoiceTerbilang">-</span>"
-            </div>
+        <!-- Watermark Cetak Sistem -->
+        <div class="text-center pt-4">
+            <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Generated by Tuntas Management</p>
         </div>
 
-        <div class="pt-4 flex justify-between items-end text-[10px] font-bold text-slate-500">
-            <div class="space-y-1">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Catatan:</p>
-                <p class="text-[9px] font-medium leading-normal max-w-[200px]">Bukti pembayaran ini sah dikeluarkan secara digital oleh sistem informasi warga RT 04 **TUNTAS**.</p>
-            </div>
-            <div class="text-center space-y-12">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bendahara RT 04</p>
-                <div class="relative">
-                    <p class="text-slate-800 font-black uppercase tracking-wide border-t border-slate-200 pt-1">PENGURUS RT</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="pt-4 border-t border-slate-100 flex gap-2 print:hidden">
-            <button onclick="window.print()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-700 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm flex items-center justify-center gap-2">
-                <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
-            </button>
-            <button onclick="window.close()" class="bg-slate-100 text-slate-600 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider border border-slate-200">
-                Kembali
+        <!-- Tombol Print (Akan Tersembunyi Otomatis Saat Print) -->
+        <div class="pt-2 print:hidden flex gap-2">
+            <button onclick="window.print()" class="w-full bg-[#0A5C36] text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm">
+                Cetak Bukti
             </button>
         </div>
 
-        <div class="text-center pt-2 print:block hidden">
-            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Dicetak otomatis melalui Aplikasi TUNTAS &copy; 2026</p>
-        </div>
     </div>
 
+    <!-- Script Integrasi Logic -->
     <script src="app.js"></script>
 </body>
 </html>
