@@ -98,11 +98,12 @@
     <script>
         const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
 
+        // FIX TOTAL: Memotong string nama hari secara akurat & mengembalikan format murni "11 Juli 2026"
         function bersihkanKeFormatIndoMurni(tglString) {
             try {
                 if (!tglString) return "";
-                if (tglString.includes(" , ")) {
-                    return tglString.split(" , ")[1].trim(); 
+                if (tglString.includes(",")) {
+                    return tglString.split(",")[1].trim(); 
                 }
                 return tglString.trim();
             } catch (e) { 
@@ -141,6 +142,7 @@
                 });
 
                 if (dataKetemu) {
+                    // Inject narasi teks ke UI
                     document.getElementById('narasiKuitansi').innerHTML = dataKetemu.narasi_kuitansi.replace(
                         dataKetemu.nama_warga, `<strong>${dataKetemu.nama_warga}</strong>`
                     );
@@ -148,10 +150,12 @@
                     document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID');
                     document.getElementById('terbilangTeks').innerText = fungsiTerbilangRupiah(dataKetemu.nominal);
                     
+                    // Render tanggal teks Indonesia bersih (Contoh: 11 Juli 2026)
                     document.getElementById('tglKuitansi').innerText = bersihkanKeFormatIndoMurni(dataKetemu.tanggal);
                     document.getElementById('tokenKuitansi').innerText = dataKetemu.token_kuitansi;
                     document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "APRIYANTO";
                     
+                    // Generate QR Code berbasis data Token ID kuitansi
                     document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataKetemu.token_kuitansi)}`;
 
                     document.getElementById('loadingKuitansi').classList.add('hidden');
