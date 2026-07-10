@@ -34,12 +34,12 @@
     <div class="flex flex-col items-center text-center mt-4 mb-6">
         <img src="logo.png" alt="Logo TUNTAS" class="w-16 h-16 object-cover rounded-2xl border border-slate-100 shadow-sm mb-3" onerror="this.src='logo.png'">
         <h1 class="text-xl font-black text-slate-800 tracking-tight leading-none">TUNTAS</h1>
-        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1.5">Sistem Pengelolaan Sampah RT 04</p>
+        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1.5">Turun Tangan Atasi Sampah</p>
     </div>
 
     <form id="formLoginWarga" onsubmit="prosesLoginWarga(event)" class="space-y-4">
         <div>
-            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider pl-1 block mb-1">Nomor WhatsApp / Username</label>
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider pl-1 block mb-1">Username</label>
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 text-xs">
                     <i class="fa-solid fa-phone"></i>
@@ -69,7 +69,7 @@
     </form>
 
     <div class="text-center mt-6 pt-4 border-t border-slate-50">
-        <p class="text-[9px] text-slate-400 font-medium">Belum punya akun atau lupa sandi? <br>Silakan hubungi <span class="text-emerald-600 font-bold">Pengurus RT 04 Dongkelan</span></p>
+        <p class="text-[9px] text-slate-400 font-medium">Belum punya akun atau lupa sandi? <br>Silakan hubungi <span class="text-emerald-600 font-bold">Admin</span></p>
     </div>
 
 </div>
@@ -79,7 +79,7 @@
 
     // Cek jika sudah login sebelumnya, langsung lempar ke dashboard
     if (localStorage.getItem("warga_session")) {
-        window.location.href = "dashboard/"; // Sesuikan path folder dashboard kamu
+        window.location.href = "cp/"; // Sesuikan path folder dashboard kamu
     }
 
     function toggleLihatPassword() {
