@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TUNTAS</title>
-    
+    <title>TUNTAS - Login Portal Warga</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="antialiased min-h-screen flex items-center justify-center p-4">
 
@@ -25,16 +24,16 @@
 
 <main class="w-full max-w-sm bg-white border border-slate-100 rounded-[2.5rem] shadow-sm p-6 space-y-6">
     <div class="text-center space-y-2">
-        <img src="../logo.png" alt="Logo TUNTAS" class="w-16 h-16 object-cover rounded-2xl border border-slate-100 mx-auto shadow-sm" onerror="this.src='logo.png'">
+        <img src="logo.png" alt="Logo TUNTAS" class="w-16 h-16 object-cover rounded-2xl border border-slate-100 mx-auto shadow-sm" onerror="this.src='logo.png'">
         <div>
-            <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">TUNTAS</h1>
-            <p class="text-[11px] font-semibold text-slate-400">Turun Tangan Atasi Sampah</p>
+            <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">Portal Warga RT 04</h1>
+            <p class="text-[11px] font-semibold text-slate-400">Silakan masuk untuk mengakses sistem informasi warga</p>
         </div>
     </div>
 
     <form id="formLoginWarga" onsubmit="prosesLoginSistem(event)" class="space-y-4">
         <div>
-            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5 pl-1">No. WhatsApp</label>
+            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5 pl-1">No. WhatsApp (Username)</label>
             <div class="relative">
                 <span class="absolute inset-y-0 left-4 flex items-center text-slate-400 text-xs"><i class="fa-solid fa-user"></i></span>
                 <input type="text" id="logUsername" placeholder="Contoh: 08123456xxx" class="w-full bg-slate-50 border border-slate-200 text-slate-700 placeholder-slate-400 rounded-xl py-3.5 pl-10 pr-4 text-xs font-bold focus:border-emerald-600 focus:bg-white outline-none transition-all" required>
@@ -53,12 +52,12 @@
         </div>
 
         <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:opacity-95 transition-opacity pt-4">
-            Masuk
+            Masuk ke Dashboard
         </button>
     </form>
 
     <div class="text-center">
-        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">TUNTAS &copy; 2026 • All right reserved</p>
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">TUNTAS &copy; 2026 • Lingkungan Bersih Transparan</p>
     </div>
 </main>
 
