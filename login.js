@@ -88,8 +88,8 @@ async function prosesLoginSistem(e) {
 }
 
 function redirectSesuaiTipe(tipe) {
-    if (tipe === "PON") { window.location.href = "../pone/"; } 
-    else { window.location.href = "../tetap/"; }
+    if (tipe === "PON") { window.location.href = "../p/"; } 
+    else { window.location.href = "../m/"; }
 }
 
 ... (Fungsi showNotif di bawah diringkas agar hemat tempat, isinya tetap sama) ...
