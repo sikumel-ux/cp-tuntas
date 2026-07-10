@@ -18,7 +18,6 @@ window.addEventListener('DOMContentLoaded', () => {
 function toggleTampilanSandi() {
     const inputSandi = document.getElementById('logPassword');
     const ikonMata = document.getElementById('iconMataSandi');
-    
     if (inputSandi.type === 'password') {
         inputSandi.type = 'text';
         ikonMata.classList.remove('fa-eye-slash');
@@ -75,7 +74,7 @@ async function prosesLoginSistem(e) {
                 const sapaan = dapatkanSapaanWaktu();
                 showNotif(`Login berhasil.\n${sapaan} Bpk/Ibu ${akunDitemukan.nama}!`, 'sukses');
                 
-                setTimeout(() => { redirectSesuaiTipe(tipeUser); }, 2500);
+                setTimeout(() => { redirectSesuaiTipe(tipeUser); }, 2000);
             } else {
                 showNotif('Password Anda Salah!', 'gagal'); loader.style.display = 'none';
             }
@@ -88,8 +87,15 @@ async function prosesLoginSistem(e) {
 }
 
 function redirectSesuaiTipe(tipe) {
-    if (tipe === "PON") { window.location.href = "../p/"; } 
-    else { window.location.href = "../m/"; }
+    if (tipe === "PON") { 
+        window.location.href = "./p/"; 
+    } else { 
+        window.location.href = "./m/"; 
+    }
 }
 
-... (Fungsi showNotif di bawah diringkas agar hemat tempat, isinya tetap sama) ...
+function showNotif(msg, type) {
+    const box = document.getElementById('notificationAlert'); box.className = `fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm z-[99999] p-4 rounded-2xl bg-white border text-xs font-black uppercase flex items-center gap-2 shadow-md ${type==='sukses'?'text-emerald-600 border-emerald-100':'text-rose-600 border-rose-100'}`;
+    document.getElementById('notifIcon').className = `fa-solid ${type==='sukses'?'fa-circle-check':'fa-circle-xmark'}`;
+    document.getElementById('notifText').innerText = msg; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 3000);
+}
