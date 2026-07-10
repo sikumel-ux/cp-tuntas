@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuitansi Digital TUNTAS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Efek shadow halus dengan aura hijau emerald tipis */
+        .shadow-emerald-soft {
+            box-shadow: 0 10px 30px -5px rgba(6, 78, 59, 0.08), 0 4px 12px -4px rgba(16, 185, 129, 0.03);
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-700 min-h-screen flex flex-col items-center justify-center p-4 antialiased">
+
+    <div class="w-full max-w-sm bg-white rounded-[32px] border-t-4 border-[#064E3B] border-x border-b border-slate-100 p-6 shadow-emerald-soft overflow-hidden relative pb-8">
+        
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none">
+            <img src="logo.png" alt="Watermark TUNTAS" class="w-48 h-48 object-contain opacity-5">
+        </div>
+
+        <div id="loadingKuitansi" class="py-20 flex flex-col items-center justify-center gap-3 relative z-10">
+            <div class="w-8 h-8 border-4 border-[#064E3B] border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-xs font-bold text-slate-400 tracking-wider uppercase">Memuat Kuitansi...</p>
+        </div>
+
+        <div id="errorKuitansi" class="hidden py-20 text-center relative z-10">
+            <i class="fa-solid fa-circle-xmark text-rose-500 text-4xl mb-3"></i>
+            <h3 class="text-sm font-black uppercase text-slate-800">Kuitansi Tidak Ditemukan</h3>
+            <p class="text-xs text-slate-400 mt-1">ID transaksi salah atau data telah dihapus.</p>
+        </div>
+
+        <div id="isiKuitansi" class="hidden space-y-6 pt-2 relative z-10">
+            
+            <div class="text-center space-y-0.5">
+                <h1 class="text-2xl font-extrabold tracking-tight text-[#064E3B]">TUNTAS.</h1>
+                <p class="text-[9px] font-bold text-[#10B981] tracking-[0.15em] uppercase">Turun Tangan Atasi Sampah</p>
+            </div>
+
+            <div class="text-center pt-1">
+                <h2 class="text-base font-extrabold text-[#1E293B] tracking-wide uppercase">Bukti Pembayaran</h2>
+                <div class="w-6 h-0.5 bg-[#10B981] mx-auto mt-1 rounded-full"></div>
+            </div>
+
+            <div class="text-center px-1">
+                <p id="narasiKuitansi" class="text-xs text-slate-500 font-medium leading-relaxed">
+                    </p>
+            </div>
+
+            <div class="bg-[#E6F4EA]/90 backdrop-blur-xs rounded-2xl py-5 px-6 text-center space-y-1.5 border border-[#D1EAD6]/50">
+                <div id="nominalTeks" class="text-2xl font-extrabold text-[#064E3B] tracking-wide">
+                    </div>
+                <div id="terbilangTeks" class="text-[9px] font-bold italic text-[#10B981] uppercase tracking-wider">
+                    </div>
+            </div>
+
+            <div class="flex justify-center pt-1">
+                <div class="p-2 bg-white/90 backdrop-blur-xs rounded-xl shadow-sm border border-slate-100">
+                    <img id="qrCodeImg" src="" alt="QR Code Transaksi" class="w-28 h-28 block" crossorigin="anonymous">
+                </div>
+            </div>
+
+            <div class="text-center border-t border-b border-dashed border-slate-200 py-2.5 my-1">
+                <p class="text-[9px] font-extrabold text-slate-400 tracking-widest uppercase">Terima Kasih Atas Partisipasi Anda</p>
+            </div>
+
+            <div class="flex justify-between items-stretch px-0.5 gap-4">
+                
+                <div class="bg-[#F8FAFC]/90 backdrop-blur-xs border border-slate-100 rounded-xl p-3 flex flex-col justify-center space-y-1 text-[10px] w-7/12">
+                    <p class="text-slate-400 font-semibold whitespace-nowrap">TANGGAL : <span id="tglKuitansi" class="text-slate-700 font-bold"></span></p>
+                    <p class="text-slate-400 font-semibold whitespace-nowrap">ID : <span id="tokenKuitansi" class="text-slate-700 font-bold"></span></p>
+                </div>
+
+                <div class="text-right flex flex-col justify-center pb-0.5 w-5/12">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Pengurus TUNTAS</p>
+                    <p id="petugasKuitansi" class="text-xs font-extrabold text-[#064E3B] uppercase tracking-wide truncate mt-0.5">
+                        </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <p class="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase">Generated by Tuntas Management</p>
+    </div>
+
+    <script>
+        const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+        function bersihkanKeFormatIndoMurni(tglString) {
+            try {
+                if (!tglString) return "";
+                if (tglString.includes(" , ")) {
+                    return tglString.split(" , ")[1].trim(); 
+                }
+                return tglString.trim();
+            } catch (e) { 
+                console.error("Gagal parse tanggal", e); 
+            }
+            return tglString; 
+        }
+
+        function fungsiTerbilangRupiah(nominal) {
+            const num = parseInt(nominal) || 0;
+            if (num === 40000) return "~ Empat Puluh Ribu Rupiah ~";
+            if (num === 20000) return "~ Dua Puluh Ribu Rupiah ~";
+            if (num === 15000) return "~ Lima Belas Ribu Rupiah ~";
+            if (num === 10000) return "~ Sepuluh Ribu Rupiah ~";
+            if (num === 5000) return "~ Lima Ribu Rupiah ~";
+            return "~ Sampah Terbayar Sah ~";
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenID = urlParams.get('id');
+
+            if (!tokenID) { tampilkanError(); return; }
+
+            try {
+                const response = await fetch(`${DB_URL}/iuran_sampah.json`);
+                const data = await response.json();
+
+                if (!data) { tampilkanError(); return; }
+
+                let dataKetemu = null;
+                Object.keys(data).forEach(key => {
+                    if (data[key].token_kuitansi === tokenID || data[key].pon === tokenID) {
+                        dataKetemu = data[key];
+                    }
+                });
+
+                if (dataKetemu) {
+                    document.getElementById('narasiKuitansi').innerHTML = dataKetemu.narasi_kuitansi.replace(
+                        dataKetemu.nama_warga, `<strong>${dataKetemu.nama_warga}</strong>`
+                    );
+                    
+                    document.getElementById('nominalTeks').innerText = "Rp " + parseInt(dataKetemu.nominal).toLocaleString('id-ID');
+                    document.getElementById('terbilangTeks').innerText = fungsiTerbilangRupiah(dataKetemu.nominal);
+                    
+                    document.getElementById('tglKuitansi').innerText = bersihkanKeFormatIndoMurni(dataKetemu.tanggal);
+                    document.getElementById('tokenKuitansi').innerText = dataKetemu.token_kuitansi;
+                    document.getElementById('petugasKuitansi').innerText = dataKetemu.nama_petugas || "APRIYANTO";
+                    
+                    document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dataKetemu.token_kuitansi)}`;
+
+                    document.getElementById('loadingKuitansi').classList.add('hidden');
+                    document.getElementById('isiKuitansi').classList.remove('hidden');
+                } else {
+                    tampilkanError();
+                }
+
+            } catch (error) {
+                console.error(error);
+                tampilkanError();
+            }
+        });
+
+        function tampilkanError() {
+            document.getElementById('loadingKuitansi').classList.add('hidden');
+            document.getElementById('errorKuitansi').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
