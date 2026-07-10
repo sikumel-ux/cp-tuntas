@@ -38,7 +38,7 @@ function dapatkanSapaanWaktu() {
 }
 
 async function prosesLoginSistem(e) {
-    e.preventDefault();
+    e.preventDefault(); // Menahan refresh halaman bawaan browser
     const usernameInput = document.getElementById('logUsername').value.trim();
     const passwordInput = document.getElementById('logPassword').value.trim();
     const loader = document.getElementById('loadingOverlay');
@@ -99,3 +99,10 @@ function showNotif(msg, type) {
     document.getElementById('notifIcon').className = `fa-solid ${type==='sukses'?'fa-circle-check':'fa-circle-xmark'}`;
     document.getElementById('notifText').innerText = msg; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 3000);
 }
+
+// ==========================================
+// SOLUSI UTAMA: Mengikat Event Submit Form
+// ==========================================
+document.getElementById('formLoginWarga').addEventListener('submit', function(e) {
+    prosesLoginSistem(e);
+});
