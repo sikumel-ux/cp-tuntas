@@ -157,12 +157,12 @@
     </div>
 </div>
 
-<!-- Modal Pop-up Bukti Pembayaran (Kuitansi) -->
+<!-- Modal Pop-up Bukti Pembayaran (Kuitansi) - UKURAN JADI max-w-xl & h-[90vh] -->
 <div id="mKuitansiPopup" class="fixed inset-0 bg-slate-900/40 z-[999] backdrop-blur-sm hidden items-center justify-center p-4 [&.active]:flex">
-    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-4 space-y-3 flex flex-col h-[75vh]">
+    <div class="bg-white w-full max-w-xl rounded-[2.5rem] p-4 space-y-3 flex flex-col h-[90vh] shadow-2xl">
         <div class="flex justify-between items-center px-2 pt-1">
             <h4 class="text-xs font-black text-slate-800 uppercase"><i class="fa-solid fa-receipt text-emerald-600 mr-1"></i> Bukti Pembayaran</h4>
-            <button onclick="closeModal('mKuitansiPopup')" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+            <button onclick="closeModal('mKuitansiPopup')" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"><i class="fa-solid fa-xmark text-sm"></i></button>
         </div>
         <div class="flex-1 w-full overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
             <iframe id="iframeKuitansi" src="" class="w-full h-full border-none"></iframe>
