@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bukti Pembayaran TUNTAS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        body {
+            background-image: url('bgk.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex items-center justify-center p-4 sm:p-6 text-emerald-950 relative after:content-[''] after:fixed after:inset-0 after:bg-emerald-950/[0.02] after:-z-10">
+
+<div id="loadingOverlay" class="fixed inset-0 bg-white/95 backdrop-blur-md z-50 flex flex-col items-center justify-center gap-2">
+    <i class="fa-solid fa-spinner animate-spin text-3xl text-emerald-700"></i>
+    <span class="text-xs font-bold text-emerald-900/60 tracking-wider uppercase">Memuat Dokumen Kuitansi...</span>
+</div>
+
+<div id="errorBox" class="hidden w-full max-w-md bg-white/70 backdrop-blur-xl border border-rose-200/40 rounded-[2.5rem] p-8 shadow-xl text-center">
+    <i class="fa-solid fa-circle-xmark text-4xl text-rose-600 mb-3"></i>
+    <h2 class="text-base font-black text-emerald-950 uppercase tracking-wide">Data Tidak Ditemukan</h2>
+    <p class="text-xs text-emerald-900/70 mt-1">Token kuitansi tidak valid atau arsip pembayaran telah dihapus dari sistem.</p>
+</div>
+
+<div id="kuitansiCard" class="hidden w-full max-w-md bg-white/70 backdrop-blur-xl border border-white/50 rounded-[2.5rem] p-6 shadow-2xl shadow-emerald-950/5 relative overflow-hidden my-4">
+    
+    <div class="flex flex-col items-center text-center mt-2 mb-5">
+        <h1 class="text-3xl font-black text-emerald-950 tracking-tighter leading-none mb-1">TUNTAS.</h1>
+        <p class="text-[9px] font-black text-emerald-800 uppercase tracking-widest border-t border-b border-emerald-950/10 py-1 px-4">Turun Tangan Atasi Sampah</p>
+    </div>
+
+    <div class="text-center mb-5">
+        <h2 class="text-sm font-black text-emerald-900/80 tracking-widest uppercase flex items-center justify-center gap-2">
+            <span class="inline-block w-6 h-[1px] bg-emerald-950/10"></span>
+            Bukti Pembayaran
+            <span class="inline-block w-6 h-[1px] bg-emerald-950/10"></span>
+        </h2>
+    </div>
+
+    <div class="text-center px-2 mb-6">
+        <p class="text-xs text-emerald-950/90 leading-relaxed font-semibold">
+            <span id="textNarasi">...</span>
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white rounded-3xl p-5 text-center shadow-lg shadow-emerald-900/30 relative overflow-hidden mb-6">
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/5 rounded-full pointer-events-none"></div>
+        <p class="text-[9px] font-bold uppercase tracking-widest text-emerald-300/80 mb-1">Total Pembayaran</p>
+        <p id="textNominal" class="text-3xl font-black tracking-tight mb-1">Rp 0</p>
+        <p id="textTerbilang" class="text-[10px] font-bold text-emerald-200 uppercase tracking-wide italic">~ Nol Rupiah ~</p>
+    </div>
+
+    <div class="flex flex-col items-center justify-center bg-white/50 border border-white/60 p-4 rounded-3xl shadow-inner mb-6 backdrop-blur-sm">
+        <canvas id="qrCanvas" class="w-36 h-36 mix-blend-multiply opacity-90"></canvas>
+    </div>
+
+    <div class="bg-emerald-900 text-white rounded-2xl py-3 px-4 flex items-center gap-3 shadow-md mb-5">
+        <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-emerald-300 text-sm">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+            <h4 class="text-[10px] font-black uppercase tracking-wide text-emerald-300 leading-tight">Terima Kasih Atas Partisipasi Anda</h4>
+            <p class="text-[9px] text-white/80 font-medium mt-0.5">Bersama kita jaga lingkungan, untuk masa depan yang lebih bersih.</p>
+        </div>
+    </div>
+
+    <div class="bg-white/40 border border-white/50 rounded-2xl p-4 flex justify-between items-center gap-4 text-xs font-bold backdrop-blur-sm">
+        <div class="space-y-3 flex-1">
+            <div>
+                <span class="text-[8px] font-black text-emerald-900/50 uppercase tracking-wider block mb-0.5"><i class="fa-solid fa-calendar-days mr-1"></i> Tanggal</span>
+                <span id="lblTanggal" class="text-emerald-950 block text-[11px]">...</span>
+            </div>
+            <div>
+                <span class="text-[8px] font-black text-emerald-900/50 uppercase tracking-wider block mb-0.5"><i class="fa-solid fa-tag mr-1"></i> ID Transaksi</span>
+                <span id="lblID" class="text-emerald-950 font-mono block text-[11px]">...</span>
+            </div>
+        </div>
+        
+        <div class="w-[1px] h-12 bg-emerald-950/10"></div>
+
+        <div class="flex flex-col items-center justify-center text-center flex-1">
+            <span class="text-[8px] font-black text-emerald-900/50 uppercase tracking-wider block mb-2">Pengurus TUNTAS</span>
+            <div class="h-8 flex items-center justify-center mb-1">
+                <i class="fa-solid fa-signature text-xl text-emerald-900/20"></i>
+            </div>
+            <span class="text-emerald-950 uppercase tracking-wide text-[10px] font-black border-t border-emerald-950/10 pt-0.5 w-full block">APRIYANTO</span>
+        </div>
+    </div>
+
+    <div class="text-center mt-6">
+        <p class="text-[8px] text-emerald-950/40 font-bold uppercase tracking-widest">&bull; Generated by Tuntas Management &bull;</p>
+    </div>
+</div>
+
+<script>
+    const DB_URL = "https://tuntas-04-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    function dapatkanAngkaTerbilang(nominal) {
+        const bilangan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+        let temp = "";
+        if (nominal < 12) {
+            temp = " " + bilangan[nominal];
+        } else if (nominal < 20) {
+            temp = dapatkanAngkaTerbilang(nominal - 10) + " Belas";
+        } else if (nominal < 100) {
+            temp = dapatkanAngkaTerbilang(Math.floor(nominal / 10)) + " Puluh" + dapatkanAngkaTerbilang(nominal % 10);
+        } else if (nominal < 200) {
+            temp = " Seratus" + dapatkanAngkaTerbilang(nominal - 100);
+        } else if (nominal < 1000) {
+            temp = dapatkanAngkaTerbilang(Math.floor(nominal / 100)) + " Ratus" + dapatkanAngkaTerbilang(nominal % 100);
+        } else if (nominal < 2000) {
+            temp = " Seribu" + dapatkanAngkaTerbilang(nominal - 1000);
+        } else if (nominal < 1000000) {
+            temp = dapatkanAngkaTerbilang(Math.floor(nominal / 1000)) + " Ribu" + dapatkanAngkaTerbilang(nominal % 1000);
+        }
+        return temp.trim();
+    }
+
+    function formatHariTanggalIndo(tanggalString) {
+        if (!tanggalString) return "...";
+        const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const daftarBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const dateObj = new Date(tanggalString);
+        return `${daftarHari[dateObj.getDay()]}, ${dateObj.getDate()} ${daftarBulan[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+    }
+
+    async function muatDataKuitansi() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('id');
+
+        if (!token) {
+            tampilkanError();
+            return;
+        }
+
+        try {
+            const res = await fetch(`${DB_URL}/iuran_sampah.json`);
+            const data = await res.json();
+            
+            if (!data) {
+                tampilkanError();
+                return;
+            }
+
+            let dataDitemukan = null;
+            Object.keys(data).forEach(key => {
+                if (data[key].token_kuitansi === token || data[key].pon === token) {
+                    dataDitemukan = data[key];
+                }
+            });
+
+            if (dataDitemukan) {
+                renderKuitansiCard(dataDitemukan);
+            } else {
+                tampilkanError();
+            }
+        } catch (error) {
+            console.error(error);
+            tampilkanError();
+        } finally {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+    }
+
+    function renderKuitansiCard(item) {
+        document.getElementById('lblID').innerText = item.token_kuitansi;
+        document.getElementById('lblTanggal').innerText = formatHariTanggalIndo(item.tanggal);
+        document.getElementById('textNominal').innerText = "Rp " + parseInt(item.nominal).toLocaleString('id-ID');
+        document.getElementById('textTerbilang').innerText = `~ ${dapatkanAngkaTerbilang(parseInt(item.nominal))} Rupiah ~`;
+        
+        document.getElementById('textNarasi').innerHTML = item.narasi_kuitansi.replace(
+            item.nama_warga, 
+            `<strong class="text-emerald-900 font-black border-b border-emerald-900/20">${item.nama_warga}</strong>`
+        );
+
+        // QR Code menggunakan warna hijau pekat agar menyatu dengan palet kartu utama
+        new QRious({
+            element: document.getElementById('qrCanvas'),
+            value: window.location.href,
+            size: 200,
+            background: 'transparent',
+            foreground: '#064e3b'
+        });
+
+        document.getElementById('kuitansiCard').classList.remove('hidden');
+    }
+
+    function tampilkanError() {
+        document.getElementById('kuitansiCard').classList.add('hidden');
+        document.getElementById('errorBox').classList.remove('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', muatDataKuitansi);
+</script>
+</body>
+</html>
