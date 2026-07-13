@@ -175,7 +175,10 @@ async function muatSistemKas() {
             const ketUpper = keteranganTeks.toUpperCase();
 
             if (ketUpper.includes("PON")) {
-                keteranganTeks = v.keterangan; // Cukup NAMA - PON
+                // Bersihkan string asal jika tidak sengaja berantakan (misal "PON - NAMA" atau "NAMA - PON - TAHUN")
+                // Mengambil bagian nama asli warga lalu memaksa format menjadi: NAMA - PON
+                let namaWarga = keteranganTeks.replace(/PON/gi, '').replace(/[-\s]+/g, ' ').trim();
+                keteranganTeks = `${namaWarga} - PON`;
             } else {
                 // Anggota tetap -> Cukup NAMA - BULAN (Hilangkan digit 4 angka tahun jika ada)
                 keteranganTeks = keteranganTeks.replace(/\s*\b\d{4}\b/g, '');
